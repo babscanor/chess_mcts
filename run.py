@@ -34,8 +34,8 @@ def update_board():
                         image=pygame.image.load("chess_pieces/blancs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
                     image = pygame.transform.scale(image, (80, 80))
                     fenetre.blit(image,(row,col))
-                    row+=size
-                compteur+=1
+                row+=size
+            compteur+=1
         row=55
         col+=size
 
@@ -78,21 +78,22 @@ while not quitgame:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN and not selected:
             mousex,mousey=pygame.mouse.get_pos()
-            caseactuelle=mousepositiontocase(mousex,mousey)
-            print(caseactuelle)
-            selectedpiece=chessboard.gamecases[caseactuelle].pieceoncase
-            print(selectedpiece)
-            if selectedpiece!=None:
-                selected=True
+            if chessboard.gamecases[mousepositiontocase(mousex,mousey)].pieceoncase.tostring()!=" ":
+                caseactuelle=mousepositiontocase(mousex,mousey)
+                selectedpiece=chessboard.gamecases[caseactuelle].pieceoncase
+                print(selectedpiece)
+                if selectedpiece.tostring()!=" ":
+                    selected=True
+                print(caseactuelle)
         elif event.type==pygame.MOUSEBUTTONDOWN and selected:
             newmousex,newmousey=pygame.mouse.get_pos()
             newcaseactuelle=mousepositiontocase(newmousex,newmousey)
             print(newcaseactuelle)
             chessboard.gamecases[newcaseactuelle].pieceoncase=selectedpiece
-            chessboard.gamecases[caseactuelle].pieceoncase=None
+            chessboard.reset(caseactuelle)
             selected=False
-
+            chessboard.print_board()
 
     pygame.display.update()
-    chessboard.print_board()
+#chessboard.print_board()
 
