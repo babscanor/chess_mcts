@@ -5,6 +5,11 @@ pygame.init()
 green=(143,188,143)
 beige=(245,222,179)
 
+font = pygame.font.Font('freesansbold.ttf', 32)
+bchess = font.render('Black in chess', True, (0,0,0))
+wchess = font.render('White in chess', True,  (0,0,0))
+bwin = font.render('Black wins', True,  (0,0,0))
+wwin = font.render('White wins', True, (0,0,0))
 
 fenetre=pygame.display.set_mode((750,750))
 couleur_fenetre=[220,220,220]
@@ -26,15 +31,20 @@ def update_board():
     size=80
     for x in range(8):
         for y in range(8):
-            if chessboard.gamecases[compteur].pieceoncase!=None:
-                if chessboard.gamecases[compteur].pieceoncase.tostring()!=" ":
-                    if chessboard.gamecases[compteur].pieceoncase.couleur=="Black":
-                        image=pygame.image.load("chess_pieces/noirs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
-                    else:
-                        image=pygame.image.load("chess_pieces/blancs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
-                    image = pygame.transform.scale(image, (80, 80))
-                    fenetre.blit(image,(row,col))
-                row+=size
+            #if chessboard.gamecases[compteur].pieceoncase!=None:
+            if chessboard.gamecases[compteur].pieceoncase.tostring()!=" ":
+                if chessboard.gamecases[compteur].pieceoncase.couleur=="Black":
+                    image=pygame.image.load("chess_pieces/noirs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
+                else:
+                    image=pygame.image.load("chess_pieces/blancs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
+                image = pygame.transform.scale(image, (80, 80))
+                fenetre.blit(image,(row,col))
+            elif chessboard.gamecases[compteur].pieceoncase.tostring()==" ":
+                if chessboard.gamecases[compteur].pieceoncase.targeted==True:
+                    image=pygame.image.load("chess_pieces/blackdot.png")
+                    image=pygame.transform.scale(image, (30,30))
+                    fenetre.blit(image,(row+25,col+25))
+            row+=size
             compteur+=1
         row=55
         col+=size
@@ -81,19 +91,42 @@ while not quitgame:
             if chessboard.gamecases[mousepositiontocase(mousex,mousey)].pieceoncase.tostring()!=" ":
                 caseactuelle=mousepositiontocase(mousex,mousey)
                 selectedpiece=chessboard.gamecases[caseactuelle].pieceoncase
-                print(selectedpiece)
+                #print(selectedpiece)
                 if selectedpiece.tostring()!=" ":
                     selected=True
-                print(caseactuelle)
+                move_possibles=selectedpiece.move_possible(chessboard)
+                for case in move_possibles:
+                    chessboard.gamecases[case].pieceoncase.targeted=True
+
+                #print(caseactuelle)
+
+
         elif event.type==pygame.MOUSEBUTTONDOWN and selected:
             newmousex,newmousey=pygame.mouse.get_pos()
             newcaseactuelle=mousepositiontocase(newmousex,newmousey)
-            print(newcaseactuelle)
-            chessboard.gamecases[newcaseactuelle].pieceoncase=selectedpiece
-            chessboard.reset(caseactuelle)
+            if newcaseactuelle in move_possibles:
+                #print(newcaseactuelle)
+                chessboard.gamecases[newcaseactuelle].pieceoncase=selectedpiece
+                chessboard.gamecases[newcaseactuelle].pieceoncase.position=newcaseactuelle
+                chessboard.reset(caseactuelle)
             selected=False
-            chessboard.print_board()
+            if not selected:
+                for case in move_possibles:
+                    chessboard.gamecases[case].pieceoncase.targeted=False
+            #chessboard.print_board()
+
+            #print(chessboard.blackinchess()[0],chessboard.whitewin())
+    if chessboard.blackinchess()[0]:
+        text=bchess
+        textRect = text.get_rect()
+        textRect.center = ((717,5), 375)
+        fenetre.blit(text, textRect)
+    if chessboard.whitewin():
+        text=wwin
+        textRect = text.get_rect()
+        textRect.center = ((717,5), 375)
+        fenetre.blit(text, textRect)
 
     pygame.display.update()
-#chessboard.print_board()
+
 
