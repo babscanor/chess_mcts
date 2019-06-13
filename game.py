@@ -1,18 +1,19 @@
-bordure=[[0,8,16,24,32,40,48,56],[56,57,58,59,60,61,62,63],[0,1,2,3,4,5,6,7],[15,23,31,39,47,55,63],0,8,16,24,32,40,48,56,57,58,59,60,61,62,63,1,2,3,4,5,6,7,15,23,31,39,47,55]
-
-#--------------on crée d'abord notre échiquier-------
+bordure=[[0,8,16,24,32,40,48,56],[56,57,58,59,60,61,62,63],[0,1,2,3,4,5,6,7],[15,23,31,39,47,55,63,7],0,8,16,24,32,40,48,56,57,58,59,60,61,62,63,1,2,3,4,5,6,7,15,23,31,39,47,55]
+from copy import deepcopy
 
 class board:
+    #cette classe comportera une methode player_turn qui donne le tour du joueur , une methode reset qui initialisera une case, et une methode
+    # qui crée une nouvelle grille de jeu
     gamecases={}
+    compteur=0
     def __init__(self):
         pass
     def reset(self, case):
         self.gamecases[case]=cases(case,vide())
     def create_board(self):
+        player_turn="White"
         for case in range(64):
             self.gamecases[case]=cases(case,vide())
-            
-  #-------- on place les pieces sur l'echiquier------
 
         self.gamecases[0]=cases(0,tour(0,"Black"))
         self.gamecases[1]=cases(1,cavalier(1,"Black"))
@@ -30,7 +31,8 @@ class board:
         self.gamecases[13]=cases(13,pion(13,"Black"))
         self.gamecases[14]=cases(14,pion(14,"Black"))
         self.gamecases[15]=cases(15,pion(15,"Black"))
-
+        for k in range(16):
+            self.gamecases[k].pieceoncase.position=k
         self.gamecases[63]=cases(63,tour(63,"White"))
         self.gamecases[62]=cases(62,cavalier(62,"White"))
         self.gamecases[61]=cases(61,eveque(61,"White"))
@@ -47,6 +49,14 @@ class board:
         self.gamecases[50]=cases(50,pion(50,"White"))
         self.gamecases[49]=cases(49,pion(49,"White"))
         self.gamecases[48]=cases(48,pion(48,"White"))
+        for k in range(48,64):
+            self.gamecases[k].pieceoncase.position=k
+    def player_turn(self):
+        if self.compteur%2==0:
+            return "White"
+        else:
+            return "Black"
+
     def blackinchess(self):
         result=False
         kingslayer=None
@@ -78,16 +88,19 @@ class board:
                             result=True
         return result
 
-    def blackwinwin(self):
+    def blackwin(self):
         result=False
         if self.whiteinchess()[0]:
             for case in self.gamecases:
                 if self.gamecases[case].pieceoncase.tostring()=="K":
                     result=True
-                    for x in self.gamecases[case].pieceoncase.move_possible():
-                        if x in self.gamecases[self.whiteinchess()[1]].pieceoncase.move_possible():
+                    for x in self.gamecases[case].pieceoncase.move_possible(self):
+                        if x in self.gamecases[self.whiteinchess()[1]].pieceoncase.move_possible(self):
                             result=True
         return result
+
+
+
 
     def print_board(self):
         compteur=0
@@ -97,8 +110,8 @@ class board:
             if compteur==8:
                 print("|",end="\n")
                 compteur=0
-                
-#---- une classe cases pour construire notre échiquier ---
+
+
 class cases:
     pieceoncase=None
     coordonnee=None
@@ -106,6 +119,7 @@ class cases:
         self.coordonnee=coordonnee
         self.pieceoncase=piece
 
+#les classes suivantes correspondent chacune à un type de piece, les attributs seront la position et la couleur et une methode donnera les mouvements posibles
 
 class king:
     couleur=None
@@ -113,15 +127,13 @@ class king:
     def __init__(self,position,couleur):
         self.position=position
         self.couleur=couleur
-        
+
     def tostring(self):
-        #on donne des noms a nos rois : le noir est "K" et le blanc "k"
         if self.couleur=="Black":
             return "K"
         else:
             return "k"
     def move_possible(self,board):
-    #---- les mouvements possibles pour une piece ( self )----
         move_possible=[]
         if self.position+8 in range(64):
             if board.gamecases[self.position+8].pieceoncase.tostring()==" " or board.gamecases[self.position+8].pieceoncase.couleur != board.gamecases[self.position ].pieceoncase.couleur :
@@ -281,7 +293,6 @@ class eveque:
                     break
                 elif board.gamecases[pos+7*k ].pieceoncase.couleur==board.gamecases[pos ].pieceoncase.couleur:
                     break
-                    
         for k in range(1,8):
             if pos+9*k in bordure and pos+9*k in range(64) :
                 if pos not in bordure[3]:
@@ -437,16 +448,33 @@ class pion:
             return "p"
     def move_possible(self,board):
         move_possible=[]
+        pos=self.position
         if self.couleur=="Black":
-            if self.position+8 in range(64) :
-                move_possible.append(self.position+8)
-            if self.position+16 in range(64):
-                move_possible.append(self.position+16)
+            for k in (1,2):
+                if pos+k*8 in range(64):
+                    if board.gamecases[pos+8*k].pieceoncase.tostring()==" "  :
+                        move_possible.append(pos+k*8)
+                    elif board.gamecases[pos+8*k].pieceoncase.couleur=="White":
+                        break
+            if self.position+9 in range(64) and board.gamecases[self.position+9].pieceoncase.couleur=="White":
+                if self.position not in bordure[3]:
+                    move_possible.append(self.position+9)
+            if self.position+7 in range(64) and board.gamecases[self.position+7].pieceoncase.couleur=="White":
+                if self.position not in bordure[0]:
+                    move_possible.append(self.position+7)
         else:
-            if self.position-8 in range(64) :
-                move_possible.append(self.position-8)
-            if self.position-16 in range(64):
-                move_possible.append(self.position-16)
+            for k in (1,2):
+                if pos-k*8 in range(64):
+                    if board.gamecases[pos-8*k].pieceoncase.tostring()==" "  :
+                        move_possible.append(pos-k*8)
+                    elif board.gamecases[pos-8*k].pieceoncase.couleur=="Black":
+                        break
+            if self.position-7 in range(64) and board.gamecases[self.position-7].pieceoncase.couleur=="Black":
+                if self.position not in bordure[3]:
+                    move_possible.append(self.position-7)
+            if self.position-9 in range(64) and board.gamecases[self.position-9].pieceoncase.couleur=="Black":
+                if self.position not in bordure[0]:
+                    move_possible.append(self.position-9)
         return move_possible
 
 
@@ -459,3 +487,24 @@ class vide:
         return " "
 
 
+def copy_board(chessboard):
+#     newboard=board(True)
+#     compteur=0
+#     while compteur<64:
+#         if chessboard.gamecases[compteur].pieceoncase.tostring()==" ":
+#             newboard.gamecases[compteur]=cases(compteur,vide())
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="K" or chessboard.gamecases[compteur].pieceoncase.tostring()=="k":
+#             newboard.gamecases[compteur]=cases(compteur,king(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="R" or chessboard.gamecases[compteur].pieceoncase.tostring()=="r":
+#             newboard.gamecases[compteur]=cases(compteur,reine(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="e" or chessboard.gamecases[compteur].pieceoncase.tostring()== "E":
+#             newboard.gamecases[compteur]=cases(compteur,eveque(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="t" or chessboard.gamecases[compteur].pieceoncase.tostring()=="T":
+#             newboard.gamecases[compteur]=cases(compteur,tour(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="c" or chessboard.gamecases[compteur].pieceoncase.tostring()=="C":
+#             newboard.gamecases[compteur]=cases(compteur,cavalier(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         elif chessboard.gamecases[compteur].pieceoncase.tostring()=="P" or chessboard.gamecases[compteur].pieceoncase.tostring()=="p":
+#             newboard.gamecases[compteur]=cases(compteur,pion(compteur, chessboard.gamecases[compteur].pieceoncase.couleur))
+#         compteur+=1
+#     return newboard
+    pass
