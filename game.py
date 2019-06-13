@@ -1,5 +1,7 @@
 bordure=[[0,8,16,24,32,40,48,56],[56,57,58,59,60,61,62,63],[0,1,2,3,4,5,6,7],[15,23,31,39,47,55,63],0,8,16,24,32,40,48,56,57,58,59,60,61,62,63,1,2,3,4,5,6,7,15,23,31,39,47,55]
 
+#--------------on crée d'abord notre échiquier-------
+
 class board:
     gamecases={}
     def __init__(self):
@@ -9,6 +11,8 @@ class board:
     def create_board(self):
         for case in range(64):
             self.gamecases[case]=cases(case,vide())
+            
+  #-------- on place les pieces sur l'echiquier------
 
         self.gamecases[0]=cases(0,tour(0,"Black"))
         self.gamecases[1]=cases(1,cavalier(1,"Black"))
@@ -93,8 +97,8 @@ class board:
             if compteur==8:
                 print("|",end="\n")
                 compteur=0
-
-
+                
+#---- une classe cases pour construire notre échiquier ---
 class cases:
     pieceoncase=None
     coordonnee=None
@@ -109,13 +113,15 @@ class king:
     def __init__(self,position,couleur):
         self.position=position
         self.couleur=couleur
-
+        
     def tostring(self):
+        #on donne des noms a nos rois : le noir est "K" et le blanc "k"
         if self.couleur=="Black":
             return "K"
         else:
             return "k"
     def move_possible(self,board):
+    #---- les mouvements possibles pour une piece ( self )----
         move_possible=[]
         if self.position+8 in range(64):
             if board.gamecases[self.position+8].pieceoncase.tostring()==" " or board.gamecases[self.position+8].pieceoncase.couleur != board.gamecases[self.position ].pieceoncase.couleur :
@@ -275,6 +281,7 @@ class eveque:
                     break
                 elif board.gamecases[pos+7*k ].pieceoncase.couleur==board.gamecases[pos ].pieceoncase.couleur:
                     break
+                    
         for k in range(1,8):
             if pos+9*k in bordure and pos+9*k in range(64) :
                 if pos not in bordure[3]:
