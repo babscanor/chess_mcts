@@ -1,5 +1,5 @@
 import pygame
-from game import board
+from game import *
 pygame.init()
 
 #initialize some colors
@@ -22,29 +22,30 @@ chessboard.create_board()
 chessboard.print_board()
 
 def draw_case(x,y,size,color):
-    # trace un rectangle de position, largeur et longueur données
+    # trace un rectangle de position, largeur et longueur donnees
     pygame.draw.rect(fenetre,color,(x,y,size,size))
 
 
 
 def update_board():
-    # actualise la fenetre de jeu à chaque itération, affiche les pieces deplacées etc
+    # actualise la fenetre de jeu a
+    #  chaque itration, affiche les pieces deplaces etc
     row=55
     col=55
     compteur=0
     size=80
     for x in range(8):
         for y in range(8):
-            #if chessboard.gamecases[compteur].pieceoncase!=None:
-            if chessboard.gamecases[compteur].pieceoncase.tostring()!=" ":
-                if chessboard.gamecases[compteur].pieceoncase.couleur=="Black":
-                    image=pygame.image.load("chess_pieces/noirs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
+            #if chessboard.gamecases[compteur]!=None:
+            if chessboard.gamecases[compteur].tostring()!=" ":
+                if chessboard.gamecases[compteur].couleur=="Black":
+                    image=pygame.image.load("chess_pieces/noirs/"+chessboard.gamecases[compteur].tostring()+".png")
                 else:
-                    image=pygame.image.load("chess_pieces/blancs/"+chessboard.gamecases[compteur].pieceoncase.tostring()+".png")
+                    image=pygame.image.load("chess_pieces/blancs/"+chessboard.gamecases[compteur].tostring()+".png")
                 image = pygame.transform.scale(image, (80, 80))
                 fenetre.blit(image,(row,col))
-            elif chessboard.gamecases[compteur].pieceoncase.tostring()==" ":
-                if chessboard.gamecases[compteur].pieceoncase.targeted==True:
+            elif chessboard.gamecases[compteur].tostring()==" ":
+                if chessboard.gamecases[compteur].targeted==True:
                     image=pygame.image.load("chess_pieces/blackdot.png")
                     image=pygame.transform.scale(image, (30,30))
                     fenetre.blit(image,(row+25,col+25))
@@ -58,7 +59,7 @@ def message(text,color,pos):
     fenetre.blit(screen_text,pos)
 
 def mousepositiontocase(x,y):
-    #prend des coordonnées sur l'écran et indique la case à laquelle ça correspond
+    #prend des coordonnees sur l ecran et indique la case a laquelle ca correspond
     compteur=0
     for j in [55+k*80 for k in range(8)]:
         for i in [55+k*80 for k in range(8)]:
@@ -71,7 +72,7 @@ selected=False
 quitgame=False
 
 while not quitgame:
-    #à chaque itération, on réaffiche la fenetre actualisée
+    #a chaque itration, on reaffiche la fenetre actualisee
     moved=False
     fenetre.fill(couleur_fenetre)
     for event in pygame.event.get():
@@ -79,6 +80,7 @@ while not quitgame:
             quitgame=True
             pygame.quit()
             quit()
+    chessboard.print_board()
 
     z=0
     size=80
@@ -99,30 +101,30 @@ while not quitgame:
     #print(chessboard.player_turn())
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN and not selected:
-            # si la souris est cliquée, on vérifie que la case cliquée est non vide, puis on vend True la variable booléenne selected, on affiche les mouvements possibles pout cette case
+            # si la souris est cliquee, on verifie que la case cliquee est non vide, puis on vend True la variable booleenne selected, on affiche les mouvements possibles pout cette case
             mousex,mousey=pygame.mouse.get_pos()
-            if chessboard.gamecases[mousepositiontocase(mousex,mousey)].pieceoncase.tostring()!=" ":
+            if chessboard.gamecases[mousepositiontocase(mousex,mousey)].tostring()!=" ":
                 caseactuelle=mousepositiontocase(mousex,mousey)
-                selectedpiece=chessboard.gamecases[caseactuelle].pieceoncase
+                selectedpiece=chessboard.gamecases[caseactuelle]
                 #print(selectedpiece)
                 if selectedpiece.tostring()!=" ":
                     selected=True
                 move_possibles=selectedpiece.move_possible(chessboard)
                 print(move_possibles)
                 for case in move_possibles:
-                    chessboard.gamecases[case].pieceoncase.targeted=True
+                    chessboard.gamecases[case].targeted=True
 
                 print(caseactuelle)
 
 
         elif event.type==pygame.MOUSEBUTTONDOWN and selected:
-            # si une case est selectionnée, et qu'on clique dans une nouvelle case et que le mouvement est valide, on fait le mouvement
+            # si une case est selectionnee, et qu on clique dans une nouvelle case et que le mouvement est valide, on fait le mouvement
             newmousex,newmousey=pygame.mouse.get_pos()
             newcaseactuelle=mousepositiontocase(newmousex,newmousey)
             if newcaseactuelle in move_possibles:
                 print(newcaseactuelle)
-                chessboard.gamecases[newcaseactuelle].pieceoncase=selectedpiece
-                chessboard.gamecases[newcaseactuelle].pieceoncase.position=newcaseactuelle
+                chessboard.gamecases[newcaseactuelle]=selectedpiece
+                chessboard.gamecases[newcaseactuelle].position=newcaseactuelle
                 chessboard.reset(caseactuelle)
                 moved=True
             selected=False
@@ -131,11 +133,11 @@ while not quitgame:
                 chessboard.compteur+=1
             if not selected:
                 for case in move_possibles:
-                    chessboard.gamecases[case].pieceoncase.targeted=False
+                    chessboard.gamecases[case].targeted=False
             #chessboard.print_board()
             #print(chessboard.player_turn())
             #print(chessboard.blackinchess()[0],chessboard.whitewin())
-    #on vérifie s'il y'a des joueurs en echecs
+    #on verifie s il y a des joueurs en echecs
     if chessboard.blackinchess()[0]:
         message("black in chess",(34, 167, 240),pos_down)
     if chessboard.whiteinchess()[0]:

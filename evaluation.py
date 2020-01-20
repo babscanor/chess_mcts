@@ -9,13 +9,13 @@ def evaluation_points_white(board):
     black = 0
     white =0
     for piece in board.gamecases:
-        if board.gamecases[piece].pieceoncase != None:
-           if board.gamecases[piece].pieceoncase.couleur == "White":
-               if board.gamecases[piece].pieceoncase.tostring() != "k":
-                    white += points[board.gamecases[piece].pieceoncase.tostring()]
-           if board.gamecases[piece].pieceoncase.couleur == "Black":
-               if board.gamecases[piece].pieceoncase.tostring() != "K":
-                    black += points[board.gamecases[piece].pieceoncase.tostring()]
+        if board.gamecases[piece] != None:
+           if board.gamecases[piece].couleur == "White":
+               if board.gamecases[piece].tostring() != "k":
+                    white += points[board.gamecases[piece].tostring()]
+           if board.gamecases[piece].couleur == "Black":
+               if board.gamecases[piece].tostring() != "K":
+                    black += points[board.gamecases[piece].tostring()]
     if board.whitewins():
         white = 3000
     if board.blackwins():
@@ -30,8 +30,8 @@ def mobility(board,couleur):
     '''
     mobility =0
     for piece in board:
-        if board.gamecases[piece].pieceoncase.couleur == couleur:
-            mobility += len(board.gamecases[piece].pieceoncase.movepossible)
+        if board.gamecases[piece].couleur == couleur:
+            mobility += len(board.gamecases[piece].movepossible)
     return mobility
 
 
@@ -44,10 +44,10 @@ def end_game(board):
     points = {"R":900, "r":900,"E":330, "e":330, "T":500,"t":500, "C":320,"c":320,"P":100,"p":100}
     points_on_board =0
     for piece in board.gamecases:
-        if board.gamecases[piece].pieceoncase != None:
-               if board.gamecases[piece].pieceoncase.tostring() != "k":
-                    if board.gamecases[piece].pieceoncase.tostring() != "K":
-                        points_on_board += points[board.gamecases[piece].pieceoncase.tostring()]
+        if board.gamecases[piece] != None:
+               if board.gamecases[piece].tostring() != "k":
+                    if board.gamecases[piece].tostring() != "K":
+                        points_on_board += points[board.gamecases[piece].tostring()]
     if points_on_board < 2000:
         return True
     return False
@@ -129,36 +129,36 @@ def evaluation_square_table_white(board):
 -50,-30,-30,-30,-30,-30,-30,-50]
 
     for piece in board.gamecases:
-        if board.gamecases[piece].pieceoncase.couleur == "White":
-            if board.gamecases[piece].pieceoncase.tostring() != "p":
+        if board.gamecases[piece].couleur == "White":
+            if board.gamecases[piece].tostring() != "p":
                 white_score += pion[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "c":
+            if board.gamecases[piece].tostring() != "c":
                 white_score += cavalier[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "t":
+            if board.gamecases[piece].tostring() != "t":
                 white_score += tour[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "e":
+            if board.gamecases[piece].tostring() != "e":
                 white_score += fou[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "r":
+            if board.gamecases[piece].tostring() != "r":
                 white_score += reine[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "k":
+            if board.gamecases[piece].tostring() != "k":
                 if fin_jeu:
                     white_score += king_endgame[piece]
                 else:
                     white_score += king_middlegame[piece]
 
-        if board.gamecases[piece].pieceoncase.couleur == "Black":
-            if board.gamecases[piece].pieceoncase.tostring() != "P":
+        if board.gamecases[piece].couleur == "Black":
+            if board.gamecases[piece].tostring() != "P":
                 black_score += pion[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "C":
+            if board.gamecases[piece].tostring() != "C":
                 black_score += cavalier[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "T":
+            if board.gamecases[piece].tostring() != "T":
                 black_score += tour[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "E":
+            if board.gamecases[piece].tostring() != "E":
                 black_score += fou[piece]
-            if board.gamecases[piece].pieceoncase.tostring() != "R":
+            if board.gamecases[piece].tostring() != "R":
                 black_score += reine[piece]
 
-            if board.gamecases[piece].pieceoncase.tostring() != "K":
+            if board.gamecases[piece].tostring() != "K":
                 if fin_jeu:
                     black_score += king_endgame[piece]
                 else:
