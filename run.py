@@ -1,5 +1,7 @@
 import pygame
 from game import *
+from MCTS import MCTS
+#from AIPlayer import *
 pygame.init()
 
 #initialize some colors
@@ -70,6 +72,7 @@ def mousepositiontocase(x,y):
 
 selected=False
 quitgame=False
+root =""
 
 while not quitgame:
     #a chaque itration, on reaffiche la fenetre actualisee
@@ -80,7 +83,7 @@ while not quitgame:
             quitgame=True
             pygame.quit()
             quit()
-    chessboard.print_board()
+    #chessboard.print_board()
 
     z=0
     size=80
@@ -110,11 +113,11 @@ while not quitgame:
                 if selectedpiece.tostring()!=" ":
                     selected=True
                 move_possibles=selectedpiece.move_possible(chessboard)
-                print(move_possibles)
+                #print(move_possibles)
                 for case in move_possibles:
                     chessboard.gamecases[case].targeted=True
 
-                print(caseactuelle)
+                #print(caseactuelle)
 
 
         elif event.type==pygame.MOUSEBUTTONDOWN and selected:
@@ -122,21 +125,31 @@ while not quitgame:
             newmousex,newmousey=pygame.mouse.get_pos()
             newcaseactuelle=mousepositiontocase(newmousex,newmousey)
             if newcaseactuelle in move_possibles:
-                print(newcaseactuelle)
-                chessboard.gamecases[newcaseactuelle]=selectedpiece
+                #print(newcaseactuelle)
+                """ chessboard.gamecases[newcaseactuelle]=selectedpiece
                 chessboard.gamecases[newcaseactuelle].position=newcaseactuelle
-                chessboard.reset(caseactuelle)
+                chessboard.reset(caseactuelle) """
+                move(chessboard,caseactuelle,newcaseactuelle )
                 moved=True
+
+
+
+                root += "{}-{}|".format(caseactuelle,newcaseactuelle)
+
+                #AI move
+                mcts = MCTS(chessboard,15, 5, root )
+                
+                root = mcts.run()
+                movement = root.split("|")[-2].split("-")
+                #print(movement)
+                move(chessboard, int(movement[0]) , int(movement[1]))
+
             selected=False
             #print(chessboard.player_turn())
-            if moved==True:
-                chessboard.compteur+=1
             if not selected:
                 for case in move_possibles:
                     chessboard.gamecases[case].targeted=False
-            #chessboard.print_board()
-            #print(chessboard.player_turn())
-            #print(chessboard.blackinchess()[0],chessboard.whitewin())
+            
     #on verifie s il y a des joueurs en echecs
     if chessboard.blackinchess()[0]:
         message("black in chess",(34, 167, 240),pos_down)

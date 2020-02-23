@@ -1,5 +1,6 @@
 bordure=[[0,8,16,24,32,40,48,56],[56,57,58,59,60,61,62,63],[0,1,2,3,4,5,6,7],[15,23,31,39,47,55,63,7],0,8,16,24,32,40,48,56,57,58,59,60,61,62,63,1,2,3,4,5,6,7,15,23,31,39,47,55]
 from copy import deepcopy
+from evaluation import *
 
 class board:
     #cette classe comportera une methode player_turn qui donne le tour du joueur , une methode reset qui initialisera une case, et une methode
@@ -64,6 +65,7 @@ class board:
                         result=True
                         kingslayer=case
         return [result,kingslayer]
+
     def whiteinchess(self):
         result=False
         kingslayer=None
@@ -76,21 +78,32 @@ class board:
         return [result,kingslayer]
     def whitewin(self):
         if self.blackinchess()[0]:
-            for board in children(self, 'Black'):
+            for board in children(self, 'Black')[0]:
                 if not board.blackinchess()[0]:
                     return False
             return True
 
     def blackwin(self):
         if self.whiteinchess()[0]:
-            for board in children(self, 'White'):
-                print()
+            for board in children(self, 'White')[0]:
                 if not board.whiteinchess()[0]:
                     return False
             return True
 
+    def final_state(self):
+        if self.blackwin() or self.whitewin:
+            return True
+        return False
 
 
+    def all_moves(self, player):
+        moves = []
+        for k in range(64):
+            piece = self.gamecases[k]
+            if piece.couleur == player:
+                pos = piece.position
+                moves += [(pos, target) for target in piece.move_possible(self)]
+        return moves
 
     def print_board(self):
         compteur=0
@@ -491,12 +504,14 @@ def children(chessboard, player):
             for mouvement in piece.move_possible(chessboard):
                 child = copy_board(chessboard)
                 move(child,position, mouvement)
-                children.append(child)
+                children.append((child,position, mouvement))
     return children
-
 
 # A= board()
 # A.create_board()
+# print(evaluation_square_table_white(A))
+
 # for child in children(A, 'Black'):
-#     child.print_board()
+#     print(child[0])
+#     child[0].print_board()
 # A.print_board()
