@@ -77,16 +77,16 @@ class board:
                         kingslayer=case
         return [result,kingslayer]
     def whitewin(self):
-        if self.blackinchess()[0]:
-            for board in children(self, 'Black')[0]:
-                if not board.blackinchess()[0]:
+        if (self.blackinchess())[0]:
+            for child in children(self, 'Black'):
+                if not (child[0].blackinchess())[0]:
                     return False
             return True
 
     def blackwin(self):
-        if self.whiteinchess()[0]:
-            for board in children(self, 'White')[0]:
-                if not board.whiteinchess()[0]:
+        if (self.whiteinchess())[0]:
+            for child in children(self, 'White'):
+                if not (child[0].whiteinchess())[0]:
                     return False
             return True
 
@@ -451,7 +451,7 @@ class pion:
                 if pos+k*8 in range(64):
                     if board.gamecases[pos+8*k].tostring()==" "  :
                         move_possible.append(pos+k*8)
-                    elif board.gamecases[pos+8*k].couleur=="White":
+                    else:
                         break
             if self.position+9 in range(64) and board.gamecases[self.position+9].couleur=="White":
                 if self.position not in bordure[3]:
@@ -464,7 +464,7 @@ class pion:
                 if pos-k*8 in range(64):
                     if board.gamecases[pos-8*k].tostring()==" "  :
                         move_possible.append(pos-k*8)
-                    elif board.gamecases[pos-8*k].couleur=="Black":
+                    else:
                         break
             if self.position-7 in range(64) and board.gamecases[self.position-7].couleur=="Black":
                 if self.position not in bordure[3]:

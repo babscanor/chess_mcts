@@ -137,7 +137,7 @@ while not quitgame:
                 root += "{}-{}|".format(caseactuelle,newcaseactuelle)
 
                 #AI move
-                mcts = MCTS(chessboard,15, 5, root )
+                mcts = MCTS(chessboard,100, 5, root )
                 
                 root = mcts.run()
                 movement = root.split("|")[-2].split("-")
