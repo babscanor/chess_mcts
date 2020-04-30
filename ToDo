@@ -1,5 +1,4 @@
--handle when we click out of the board 
-- root is way too long, this is not normal
--add correct evaluation function
--handle player turn in simulation
--define is_final_state
+- handle when we click out of the board 
+- use better evaluation function
+- handle player turn in simulation
+- define is_final_state
